@@ -1,4 +1,2 @@
-nimcache/
-nimblecache/
-htmldocs/
 oauth.key
+*.exe
