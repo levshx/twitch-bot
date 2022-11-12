@@ -1,8 +1,9 @@
-import irc, asyncdispatch, strutils, os
+import irc, asyncdispatch, strutils, os, random
+randomize()
 const
   IrcPort = Port(6667)
   TwitchAddr = "irc.chat.twitch.tv"
-  HelpText = """Комманды туть github.com/levshx/twitch-bot"""
+  HelpText = """Комманды: t.ly/23de"""
 var client = newIrc(address = TwitchAddr,
                 port = IrcPort,
                 nick="levshxbot",
@@ -21,11 +22,14 @@ while true:
     of EvMsg:
       if event.cmd == MPrivMsg:
         var msg = event.params[event.params.high]
-        if msg == "!help": client.privmsg(event.origin, "!help — помощ для нубиков")
-        if msg == "!lag":
-          client.privmsg(event.origin, formatFloat(client.getLag))
-        if msg == "!excessFlood":
-          for i in 0..10:
-            client.privmsg(event.origin, "TEST" & $i)
-      
-      echo(event.raw)
+        var user = event.params[event.params.low]
+        user.delete(0,0)
+        let toUser = "@" & user & ", "
+        if msg == "!help": 
+          client.privmsg(event.origin, HelpText)
+        if msg == "!flip":
+          if rand(0..1) == 0:
+            client.privmsg(event.origin, toUser & "Орёл [true] 1")
+          else:  
+            client.privmsg(event.origin, toUser & "Решка [false] 0")
+      # echo(event.raw)
