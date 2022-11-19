@@ -1,98 +1,45 @@
-import irc, asyncdispatch, strutils, std/[times, os], random, sequtils
-
-randomize()
+import core/botcore
+import strutils
 
 const
-  IrcPort = Port(6667)
-  TwitchAddr = "irc.chat.twitch.tv"
-  Chanel = "#levshx"
   BotNick = "levshxbot"
-  OAuthKey = readFile("oauth.key")
+  OAuthKey = readFile("oauth.key") # create file with bot oauth.key 
+  Chanel = "levshx"
 
-let logFile = open("LOG.txt", fmAppend)
+var bot = newTwitchBot(BotNick, OAuthKey, Chanel)
 
-var reload: bool = true
 
-var badWords = readFile("badwords.txt").splitLines()
+if bot.connect():
+  echo "bot connected"
+else:
+  echo "bot not connected ERRRRRRRRRRRRROR"
 
-var client = newIrc(
-    address = TwitchAddr,
-    port = IrcPort,
-    nick = BotNick,
-    serverPass = OAuthKey,
-    joinChans = @[Chanel]
+proc help(nick: string, args: seq[string]) =
+  bot.sendMessage(
+    "@"&nick&", help :D"
   )
 
+var helper: Trigger_Command
+helper.reg = re"^!help"
+helper.callback = help
 
-while not client.isConnected():
-  client.connect()
-  os.sleep(1000)
-  if client.isConnected():
-    echo "Connected"
-  else:
-    echo "Not connected"
+var pay: Trigger_Command
+pay.reg = re"^!pay\s+(\w+)\s+(\d+)$"
+pay.callback = proc (nick: string, args: seq[string]) = bot.sendMessage(
+    "@"&nick&", pay "&args[1]&" moneys, to "&args[0]
+  )
 
-client.privmsg(Chanel, "Bot was started")
-client.send("CAP REQ :twitch.tv/commands twitch.tv/tags twitch.tv/membership")
+let badwords_answers = readFile("badwordsNotice.txt").splitLines()
+proc badwordCallback(nick:string) =
+  bot.sendMessage("@" & nick & ", " & badwords_answers[rand(0..badwords_answers.len-1)])
 
+var badWords: Trigger_Words
+badWords.words = readFile("badwords.txt").splitLines()
+badWords.callback = badwordCallback
+
+bot.triggers.commands.add(helper)
+bot.triggers.commands.add(pay)
+bot.triggers.words.add(badWords)
 
 while true:
-  while not client.isConnected():
-    echo "Not connected"
-    try:
-      client.connect() 
-      sleep(1000)          
-    except:
-      sleep(10000)
-    if client.isConnected():
-      client.privmsg(Chanel, "Bot was restarted") 
-      client.send("CAP REQ :twitch.tv/commands twitch.tv/tags")
-  
-# try:
-  var event: IrcEvent
-  if client.poll(event):
-    case event.typ
-    of EvConnected:
-      discard
-    of EvDisconnected, EvTimeout:
-      break
-    of EvMsg:
-      if event.cmd == MPrivMsg:
-        var msg = event.params[event.params.high]
-        var user = event.params[event.params.low]
-        user.delete(0,0)
-        let toUser = "@" & user & ", "
-        if msg == "!help": 
-          client.privmsg(event.origin, toUser &  "Commands: t.ly/23de")         
-        elif msg == "!flip":
-          if rand(0..1) == 0:
-            client.privmsg(event.origin, toUser & "Орёл [true] 1")
-          else:  
-            client.privmsg(event.origin, toUser & "Решка [false] 0")
-        else:
-          msg = multiReplace(msg, @[(".", ""),(",", ""),("!", ""),("?", ""),(":", "")])        
-          if any(msg.splitWhitespace(), proc (x: string): bool = any(badWords, proc (y: string): bool = x.toLower() == y)):
-            client.privmsg(event.origin, toUser &  "подбирай выражения HUH")  
-      if event.cmd == MJoin:  
-        var user = event.raw.split("!")[0]
-        user.delete(0,0)
-        user = "@" & user        
-        client.privmsg(event.origin, user & " привет! catJAMPARTY")
-        echo ""
-        echo event.params
-        echo ""
-      if event.cmd == MPart: 
-        var user = event.raw.split("!")[0]
-        user.delete(0,0)
-        user = "@" & user    
-        client.privmsg(event.origin, user & " пока wideVIBE") 
-
-      
-      # if event.cmd == MUnknown:
-      #   Парсим не стандартные события IRC Twitch
-      #   echo "lel"
-      if not defined(GUI): # DEBUG
-        echo(event.raw)
-      logFile.writeLine("[" & $now()  & "] " & event.raw)
-# except:
-#   sleep(500)
+  bot.step()
