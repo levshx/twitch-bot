@@ -43,6 +43,8 @@ type
 
 proc connect*(self: var TwitchBot): bool =
   self.irc_client.connect()
+  if self.irc_client.isConnected():
+    self.irc_client.send("CAP REQ :twitch.tv/commands twitch.tv/tags")
   return self.irc_client.isConnected()
 
 proc isConnected*(self: TwitchBot): bool =

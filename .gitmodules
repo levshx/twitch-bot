@@ -1,3 +1,0 @@
-[submodule "core/irc_twitch"]
-	path = core/irc_twitch
-	url = https://github.com/levshx/twitch-irc.git
