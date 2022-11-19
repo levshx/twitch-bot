@@ -64,17 +64,16 @@ proc newTwitchBot*(botNick: string, oAuthKey: string, chanel: string): TwitchBot
     joinChans = @[result.sharp_chanel]
   )
 
-proc logEnable*(self: var TwitchBot, state: bool, file: string = "LOG.txt"): void =
+proc logEnable*(self: var TwitchBot, state: bool, file: string = getAppDir() / "LOG.txt"): void =
   self.log = state
   self.logFile = file
 
-proc setLog*(self: TwitchBot, text: string): void = 
-  let logFile = open(self.logFile, fmAppend)
-  logFile.writeLine("[" & $now()  & "] " & text)
-
-
-proc test*(self: TwitchBot): void = 
-  echo "kek"
+proc logLine*(self: TwitchBot, text: string): void = 
+  if self.log:
+    var logFile = open(self.logFile, fmAppend)
+    logFile.writeLine("[" & $now()  & "] " & text)
+    echo "[" & $now()  & "] " & text
+    logFile.close()
 
 proc step*(self: var TwitchBot): void =    
   if self.isConnected():
@@ -110,5 +109,5 @@ proc step*(self: var TwitchBot): void =
           # if event.cmd == MUnknown:
           #   echo "Unknown"
           if self.log:
-            self.setLog(event.raw)  
-  os.sleep(50)
+            self.logLine(event.raw)  
+  os.sleep(10)
