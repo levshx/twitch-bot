@@ -1,6 +1,6 @@
-import twitch_irc, re, strutils, std/[times, os], random, sequtils, triggers
+import twitch_irc, re, strutils, std/[times, os], random, sequtils, triggers, strtabs
 
-export re, triggers, random
+export re, triggers, random, times
 
 randomize()
 
@@ -17,11 +17,11 @@ type
     log: bool
     logFile: string
     triggers*: tuple [
-      commands: seq[tuple [
+      command: seq[tuple [
         reg: Regex,        
         callback: proc (nick: string, args: seq[string]),
       ]],
-      words: seq[tuple [
+      word: seq[tuple [
         words: seq[string],
         callback: proc (nick: string),
       ]],
@@ -29,20 +29,21 @@ type
         callback: proc (nick: string),
       ]],
       twitch_resub: seq[tuple [
-        level: int,
-        month: int,
-        callback: proc (nick: string, month: int, level: int),
+        callback: proc (nick: string, month: int),
       ]],
-      twitch_follow: seq[tuple [
+      new_chatter: seq[tuple [
         callback: proc (nick: string),
-      ]],
-      newChatter: seq[tuple [
-        callback: proc (nick: string),
-      ]],      
+      ]], 
+      cron: seq[tuple [
+        timeout: Duration,
+        last_time: DateTime,
+        callback: proc (),
+      ]], 
     ]
 
 proc connect*(self: var TwitchBot): bool =
   self.irc_client.connect()
+  sleep(500)
   if self.irc_client.isConnected():
     self.irc_client.send("CAP REQ :twitch.tv/commands twitch.tv/tags")
   return self.irc_client.isConnected()
@@ -78,37 +79,62 @@ proc logLine*(self: TwitchBot, text: string): void =
     logFile.close()
 
 proc step*(self: var TwitchBot): void =    
-  if self.isConnected():    
-      var event: IrcEvent
-      if self.irc_client.poll(event):
-        case event.typ
-        of EvConnected:
-          discard
-        of EvDisconnected, EvTimeout:
-          discard
-        of EvMsg:
-          let msg = event.params[event.params.high]
-          let msg_words = multiReplace(msg, @[(".", ""),(",", ""),("!", ""),("?", ""),(":", ""),("_", "")]) 
-          let user = event.nick 
-          if event.cmd == MPrivMsg:       
-            for command in self.triggers.commands:
-              var matches: array[20,string]
-              if match(msg, command.reg, matches):
-                var args: seq[string] = matches.toSeq
-                for argN in countdown(args.len-1, 0):
-                  if args[argN]=="":
-                    args.delete(argN)                
-                command.callback(user, args)
-            for wordt in self.triggers.words:                            
-              if any(msg_words.splitWhitespace(), proc (x: string): bool = any(wordt.words, proc (y: string): bool = x.toLower() == y)):
-                wordt.callback(user)
-                       
-          # if event.cmd == MJoin:
-          #   client.privmsg(Chanel, user & " привет! catJAMPARTY")
-          # if event.cmd == MPart:
-          #   client.privmsg(Chanel, user & " пока wideVIBE") 
-          # if event.cmd == MUnknown:
-          #   echo "Unknown"
-          if self.log:
-            self.logLine(event.raw)  
+  if self.isConnected():  
+    #cron
+    if self.triggers.cron.len>0:
+      for cron_n in 0..self.triggers.cron.len-1: 
+        let now = now()
+        if now - self.triggers.cron[cron_n].last_time > self.triggers.cron[cron_n].timeout:
+          self.triggers.cron[cron_n].last_time = now
+          self.triggers.cron[cron_n].callback()
+          
+    var event: IrcEvent
+    if self.irc_client.poll(event):
+      case event.typ
+      of EvConnected:
+        self.logLine("Connected succ")
+      of EvDisconnected, EvTimeout:
+        self.logLine("Disconnected/Timeout: " & $event.typ)
+        while not self.connect():
+          self.logLine("try reconnect")
+        self.logLine("isConnected: " & $self.isConnected())
+      of EvMsg:
+        if self.log:
+          self.logLine(event.raw)
+        let msg = event.params[event.params.high]
+        let msg_words = multiReplace(msg, @[(".", ""),(",", ""),("!", ""),("?", ""),(":", ""),("_", "")]) 
+        let user = event.nick 
+        if event.cmd == MPrivMsg:       
+          for command in self.triggers.command:
+            var matches: array[20,string]
+            if match(msg, command.reg, matches):
+              var args: seq[string] = matches.toSeq
+              for argN in countdown(args.len-1, 0):
+                if args[argN]=="":
+                  args.delete(argN)                
+              command.callback(user, args)
+          for wordt in self.triggers.word:                            
+            if any(msg_words.splitWhitespace(), proc (x: string): bool = any(wordt.words, proc (y: string): bool = x.toLower() == y)):
+              wordt.callback(user)
+        if event.cmd == MUserNotice:
+          case (event.tags["msg-id"]):
+          of "sub":
+            for subt in self.triggers.twitch_sub:
+              subt.callback(user)
+          of "resub":
+            for subt in self.triggers.twitch_resub:
+              subt.callback(user, parseInt(event.tags["msg-param-cumulative-months"]))
+          of "raid":
+            echo "kek"
+          of "unraid":
+            echo "kek"
+          of "ritual":
+            if event.tags["msg-param-ritual-name"] == "new_chatter":
+              for newchattert in self.triggers.new_chatter:
+                newchattert.callback(user)
+          else: 
+            echo "Undefined"  
+        if event.cmd == MReconnect:
+          while not self.connect():
+            self.logLine("try reconnect")
   os.sleep(10)

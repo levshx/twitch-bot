@@ -1,4 +1,4 @@
-import re
+import re, times
 type
     Trigger_Command* = tuple [
         reg: Regex,
@@ -12,13 +12,13 @@ type
         callback: proc (nick: string),
     ]
     Trigger_Resub* = tuple [
-        level: int,
-        month: int,
-        callback: proc (nick: string, month: int, level: int),
+        callback: proc (nick: string, month: int),
     ]
-    Trigger_Follow* = tuple [
-        callback: proc (nick: string),
-      ]
     Trigger_New_Chatter* = tuple [
         callback: proc (nick: string),
+    ]
+    Trigger_Cron* = tuple [
+        timeout: Duration,
+        last_time: DateTime,
+        callback: proc (),
     ]
