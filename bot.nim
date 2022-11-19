@@ -6,15 +6,14 @@ var
   OAuthKey = readFile(getAppDir() / "oauth.key") # create file with bot.exe > oauth.key 
   Chanel = "levshx"
   badwords_answers = readFile(getAppDir() / "badwordsNotice.txt").splitLines()
-
-
-var bot = newTwitchBot(BotNick, OAuthKey, Chanel)
-
-proc help(nick: string, args: seq[string]) =
-  bot.sendMessage("@"&nick&", комманды тут: t.ly/23de")
+  
+  bot = newTwitchBot(BotNick, OAuthKey, Chanel)
 
 proc getSocialRating(nick: string): int =
   return nick.len
+
+proc helpCallback(nick: string, args: seq[string]) =
+  bot.sendMessage("@"&nick&", комманды тут: t.ly/23de")
 
 proc newChatterCallback(nick: string): void =
   bot.sendMessage("@"&nick&", добро пожаловать в ЧААТ")
@@ -31,7 +30,6 @@ proc subCallback(nick:string) =
 proc resubCallback(nick:string, month: int) =
   bot.sendMessage("@"&nick&" профессианально оформил РЕСУБ! В теме уже: "& $month & " month")
 
-
 proc cronCallback() = 
   bot.sendMessage("Мессага из крона каждые 5 минут")
 
@@ -39,7 +37,7 @@ proc cronCallback() =
 proc main(): void =
   var helper: Trigger_Command
   helper.reg = re"^ *!help *$"
-  helper.callback = help
+  helper.callback = helpCallback
 
   var rait: Trigger_Command
   rait.reg = re"^ *!rating *$"

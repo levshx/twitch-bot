@@ -125,9 +125,9 @@ proc step*(self: var TwitchBot): void =
             for subt in self.triggers.twitch_resub:
               subt.callback(user, parseInt(event.tags["msg-param-cumulative-months"]))
           of "raid":
-            echo "kek"
+            echo "Пока не сделал рейд"
           of "unraid":
-            echo "kek"
+            echo "Пока не сделал рейд"
           of "ritual":
             if event.tags["msg-param-ritual-name"] == "new_chatter":
               for newchattert in self.triggers.new_chatter:
