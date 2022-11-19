@@ -3,7 +3,7 @@ import os, strutils
 
 var
   BotNick = "levshxbot"
-  OAuthKey = readFile(getAppDir() / "oauth.key") # create file with bot oauth.key 
+  OAuthKey = readFile(getAppDir() / "oauth.key") # create file with bot.exe > oauth.key 
   Chanel = "levshx"
   badwords_answers = readFile(getAppDir() / "badwordsNotice.txt").splitLines()
 

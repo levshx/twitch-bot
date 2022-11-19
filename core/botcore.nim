@@ -1,4 +1,4 @@
-import irc, re, strutils, std/[times, os], random, sequtils, triggers
+import twitch_irc, re, strutils, std/[times, os], random, sequtils, triggers
 
 export re, triggers, random
 
@@ -76,8 +76,7 @@ proc logLine*(self: TwitchBot, text: string): void =
     logFile.close()
 
 proc step*(self: var TwitchBot): void =    
-  if self.isConnected():
-    
+  if self.isConnected():    
       var event: IrcEvent
       if self.irc_client.poll(event):
         case event.typ
