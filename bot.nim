@@ -21,7 +21,7 @@ proc rating(nick: string, args: seq[string]) =
 
 proc badwordCallback(nick:string) =
   bot.sendMessage("@" & nick & ", " & badwords_answers[rand(0..badwords_answers.len-1)])
-    
+     
 proc main(): void =
   var helper: Trigger_Command
   helper.reg = re"^ *!help *$"
