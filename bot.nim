@@ -1,6 +1,10 @@
 import core/botcore
 import os, strutils
 
+# нада открыть ишью на эту тему
+proc rand*[T](s: openArray[T]): T =
+  return s[rand(0..s.len-1)]
+
 var
   BotNick = "levshxbot"
   OAuthKey = readFile(getAppDir() / "oauth.key") # create file with bot.exe > oauth.key 
@@ -22,7 +26,7 @@ proc ratingCallback(nick: string, args: seq[string]) =
   bot.sendMessage("@"&nick&", очки социального рейтинга: "& $(getSocialRating(nick)*10))
 
 proc badwordCallback(nick:string) =
-  bot.sendMessage("@" & nick & ", " & badwords_answers[rand(0..badwords_answers.len-1)])
+  bot.sendMessage("@" & nick & ", " & badwords_answers.rand)
      
 proc subCallback(nick:string) =
   bot.sendMessage("@"&nick&", СПОСИБО!! ЗА ПОДПИСКУ!! НО Я НЕ ЗНАЮ КАК СНЯТЬ ЭТИ ДЕНЬГИ!!!, НО ВСЁ РАВНО СПОСИИИБООО!!")
