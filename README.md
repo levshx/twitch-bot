@@ -1,7 +1,7 @@
 # twitch-bot
 
-| Команда     | Пояснение           |
-| ----------- |:-------------------:|
-| !help       | Список комманд      |
-| !rating     | Социальный рейтинг  |
-| !flip       | Бросить монетку     |
+To install using [Nimble](https://github.com/nim-lang/nimble) run the following:
+
+```
+$ nimble build
+```
