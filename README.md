@@ -1,6 +1,6 @@
 # twitch-bot
 
-
+[![Docs](https://github.com/levshx/twitch-bot/actions/workflows/docs_ci.yml/badge.svg)](https://github.com/levshx/twitch-bot/actions/workflows/docs_ci.yml)
 
 To build using [Nimble](https://github.com/nim-lang/nimble) run the following:
 
