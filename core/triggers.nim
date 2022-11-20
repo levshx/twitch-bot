@@ -4,6 +4,10 @@ type
         reg: Regex,
         callback: proc (nick: string, args: seq[string]),
     ]
+    Trigger_Find_Regex* = tuple [
+        reg: Regex,
+        callback: proc (nick: string, items: seq[string]),
+    ]
     Trigger_Words* = tuple [
         words: seq[string],
         callback: proc (nick: string),

@@ -1,16 +1,22 @@
 import core/botcore
-import os, strutils
+import os, strutils, sequtils
+import bot/[urlcheck, rating]
 
 var
   BotNick = "levshxbot"
-  OAuthKey = readFile(getAppDir() / "oauth.key") # create file with bot.exe > oauth.key 
+  OAuthKey = readFile(getAppDir() / "oauth_twitch.key") # create file with bot.exe > oauth.key 
   Chanel = "levshx"
   badwords_answers = readFile(getAppDir() / "badwordsNotice.txt").splitLines()
   
   bot = newTwitchBot(BotNick, OAuthKey, Chanel)
 
-proc getSocialRating(nick: string): int =
-  return nick.len
+ 
+proc checkURLCallBack(nick: string, items: seq[string]) =
+  bot.sendMessage("@"&nick&", Проверим ссылопчку")
+  if any(items, proc(x: string): bool = not validateURL(x)):
+    bot.sendMessage("Обнаружен фишинг  monkaBAN monkaBAN monkaBAN")
+  else:
+    bot.sendMessage("Вроде нормально") 
 
 proc helpCallback(nick: string, args: seq[string]) =
   bot.sendMessage("@"&nick&", комманды тут: https://levshx.github.io/twitch-bot/")
@@ -45,6 +51,10 @@ proc unraidCallback() =
 
 
 proc main(): void =
+  var urlCheck: Trigger_Find_Regex
+  urlCheck.reg = re"(https?:\/\/)?(www\.)?[-a-zA-Z0-9.]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+  urlCheck.callback = checkURLCallBack
+
   var helper: Trigger_Command
   helper.reg = re"^ *!help *$"
   helper.callback = helpCallback
@@ -77,6 +87,7 @@ proc main(): void =
   var unraid: Trigger_Unraid
   unraid.callback = unraidCallback
 
+  bot.triggers.find_regex.add(urlCheck)
   bot.triggers.command.add(helper)
   bot.triggers.command.add(rating)
   bot.triggers.word.add(badWords)

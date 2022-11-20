@@ -21,6 +21,10 @@ type
         reg: Regex,        
         callback: proc (nick: string, args: seq[string]),
       ]],
+      find_regex: seq[tuple [
+        reg: Regex,        
+        callback: proc (nick: string, items: seq[string]),
+      ]],
       word: seq[tuple [
         words: seq[string],
         callback: proc (nick: string),
@@ -109,7 +113,7 @@ proc step*(self: var TwitchBot): void =
         let msg = event.params[event.params.high]
         let msg_words = multiReplace(msg, @[(".", ""),(",", ""),("!", ""),("?", ""),(":", ""),("_", "")]) 
         let user = event.nick 
-        if event.cmd == MPrivMsg:       
+        if event.cmd == MPrivMsg:
           for command in self.triggers.command:
             var matches: array[20,string]
             if match(msg, command.reg, matches):
@@ -118,6 +122,10 @@ proc step*(self: var TwitchBot): void =
                 if args[argN]=="":
                   args.delete(argN)                
               command.callback(user, args)
+          for find_regt in self.triggers.find_regex:
+            let finded = findAll(msg, find_regt.reg)
+            if finded.len > 0:
+              find_regt.callback(user, finded)
           for wordt in self.triggers.word:                            
             if any(msg_words.splitWhitespace(), proc (x: string): bool = any(wordt.words, proc (y: string): bool = x.toLower() == y)):
               wordt.callback(user)

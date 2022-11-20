@@ -14,5 +14,5 @@ requires "https://github.com/levshx/twitch-irc"
 task docs, "Generate docs!":
   exec "nim rst2html --index:on --git.url:https://github.com/levshx/twitch-bot --git.commit:devel --outdir:docs/html docs/*.rst"
 
-task depends, "Generate docs!":
+task depends, "get depends!":
   exec "nimble install https://github.com/levshx/twitch-irc"
