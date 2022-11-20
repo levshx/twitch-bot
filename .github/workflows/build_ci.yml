@@ -40,4 +40,6 @@ jobs:
       with:
         nim-version: 'stable' # default is 'stable'
      - 
-      run: nimble build
+      run: nimble depends     
+     - 
+      run: nim c bot.nim
