@@ -10,7 +10,6 @@ var
   
   bot = newTwitchBot(BotNick, OAuthKey, Chanel)
 
- 
 proc checkURLCallBack(nick: string, items: seq[string]) =
   bot.sendMessage("@"&nick&", Проверим ссылопчку")
   if any(items, proc(x: string): bool = not validateURL(x)):
