@@ -38,6 +38,6 @@ jobs:
      - 
       uses: jiro4989/setup-nim-action@v1
       with:
-        nim-version: '1.6.4' # default is 'stable'
+        nim-version: 'stable' # default is 'stable'
      - 
-      run: nimble build
+      run: nim c bot.nim
