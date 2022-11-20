@@ -6,7 +6,7 @@ levshxbot
 :Версия: 0.0.1
 :Автор: levshx
 
-Исходный код в репозитории 
+Исходный код  
 `levshx/twitch-bot <https://github.com/levshx/twitch-bot>`_.
 
 Commands
