@@ -2,7 +2,7 @@
 
 
 
-To install using [Nimble](https://github.com/nim-lang/nimble) run the following:
+To build using [Nimble](https://github.com/nim-lang/nimble) run the following:
 
 Before build, create oAuth key and write him in `bin\oauth.key`
 
