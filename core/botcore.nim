@@ -31,6 +31,12 @@ type
       resub: seq[tuple [
         callback: proc (nick: string, month: int),
       ]],
+      raid: seq[tuple [
+        callback: proc (nick: string, viewers: int),
+      ]],
+      unraid: seq[tuple [
+        callback: proc (),
+      ]],
       new_chatter: seq[tuple [
         callback: proc (nick: string),
       ]], 
@@ -124,9 +130,11 @@ proc step*(self: var TwitchBot): void =
             for subt in self.triggers.resub:
               subt.callback(user, parseInt(event.tags["msg-param-cumulative-months"]))
           of "raid":
-            echo "Пока не сделал рейд"
+            for raidt in self.triggers.raid:
+              raidt.callback(event.tags["msg-param-displayName"], parseInt(event.tags["msg-param-viewerCount"]))
           of "unraid":
-            echo "Пока не сделал рейд"
+            for unraidt in self.triggers.unraid:
+              unraidt.callback()
           of "ritual":
             if event.tags["msg-param-ritual-name"] == "new_chatter":
               for newchattert in self.triggers.new_chatter:

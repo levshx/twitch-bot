@@ -33,6 +33,17 @@ proc resubCallback(nick:string, month: int) =
 proc cronCallback() = 
   bot.sendMessage("Мессага из крона каждые 5 минут")
 
+proc raidCallback(nick: string, viewers: int) =
+  bot.sendMessage("Система взломана. Нанесён урон. Запущено планирование контрмер.")
+  sleep(400)
+  bot.sendMessage("Интересно...")
+  sleep(200)
+  bot.sendMessage("Кто бы мог подумать, но @" & nick & " начинает рейд, кол-во рейдеров: "& $viewers)
+
+proc unraidCallback() =
+  bot.sendMessage("Рейд завершён HUH")
+
+
 proc main(): void =
   var helper: Trigger_Command
   helper.reg = re"^ *!help *$"
@@ -60,6 +71,12 @@ proc main(): void =
   cron.last_time = now()
   cron.callback = cronCallback
 
+  var raid: Trigger_Raid
+  raid.callback = raidCallback
+
+  var unraid: Trigger_Unraid
+  unraid.callback = unraidCallback
+
   bot.triggers.command.add(helper)
   bot.triggers.command.add(rating)
   bot.triggers.word.add(badWords)
@@ -67,6 +84,8 @@ proc main(): void =
   bot.triggers.resub.add(resub)
   bot.triggers.newChatter.add(newChatter)
   bot.triggers.cron.add(cron)
+  bot.triggers.raid.add(raid)
+  bot.triggers.unraid.add(unraid)
   
   bot.logEnable(true)
 
