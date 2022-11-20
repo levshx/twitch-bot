@@ -15,7 +15,10 @@ Commands
 Events
 ======
 
-`BadWord` - событие срабатывает на список слов BadWord, отвечая фразами BadWord_Answer
+`BadWord` - событие срабатывает на список слов 
+`badwords.txt <https://github.com/levshx/twitch-bot/blob/devel/bin/badwords.txt>`_
+, отвечая фразами 
+`badwordsNotice.txt <https://github.com/levshx/twitch-bot/blob/devel/bin/badwordsNotice.txt>`_
 
 `Sub` - событие срабатывает на подписку
 

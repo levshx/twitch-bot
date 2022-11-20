@@ -28,7 +28,7 @@ proc subCallback(nick:string) =
   bot.sendMessage("@"&nick&", СПОСИБО!! ЗА ПОДПИСКУ!! НО Я НЕ ЗНАЮ КАК СНЯТЬ ЭТИ ДЕНЬГИ!!!, НО ВСЁ РАВНО СПОСИИИБООО!!")
 
 proc resubCallback(nick:string, month: int) =
-  bot.sendMessage("@"&nick&" профессианально оформил РЕСУБ! В теме уже: "& $month & " month")
+  bot.sendMessage("@"&nick&" профессианально оформил РЕСУБ!! В теме уже: "& $month & " month")
 
 proc cronCallback() = 
   bot.sendMessage("Мессага из крона каждые 5 минут")
