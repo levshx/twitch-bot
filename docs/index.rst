@@ -2,8 +2,12 @@
 levshxbot
 =========
 
-:Автор: levshx
+:LICENSE: MIT
 :Версия: 0.0.1
+:Автор: levshx
+
+Исходный код в репозитории 
+`levshx/twitch-bot <https://github.com/levshx/twitch-bot>`_.
 
 Commands
 ========

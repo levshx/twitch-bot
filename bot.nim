@@ -13,7 +13,7 @@ proc getSocialRating(nick: string): int =
   return nick.len
 
 proc helpCallback(nick: string, args: seq[string]) =
-  bot.sendMessage("@"&nick&", комманды тут: t.ly/23de")
+  bot.sendMessage("@"&nick&", комманды тут: https://levshx.github.io/twitch-bot/")
 
 proc newChatterCallback(nick: string): void =
   bot.sendMessage("@"&nick&", добро пожаловать в ЧААТ")

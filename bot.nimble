@@ -12,4 +12,4 @@ requires "https://github.com/levshx/twitch-irc"
 # exec "nimble build"
 
 task docs, "Generate docs!":
-  exec "nim rst2html --index:on --git.url:https://github.com/levshx/nim-steam --git.commit:devel --outdir:docs/html docs/*.rst"
+  exec "nim rst2html --index:on --git.url:https://github.com/levshx/twitch-bot --git.commit:devel --outdir:docs/html docs/*.rst"
