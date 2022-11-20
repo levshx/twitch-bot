@@ -40,10 +40,6 @@ jobs:
       with:
         nim-version: 'stable'
 
-     - 
-      name: 'Install steam lib'
-      run: nimble install -y
-
      -
       name: 'Generate docs' 
       run: nimble docs

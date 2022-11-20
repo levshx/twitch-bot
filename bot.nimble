@@ -4,7 +4,7 @@ author      = "levshx"
 description = "Twitch bot"
 license     = "MIT"
 bin = @["bot"]
-namedBin["bot"] = "bin/bot.exe"
+namedBin["bot"] = "bin/bot"
 
 requires "nim >= 1.6.0"
 requires "https://github.com/levshx/twitch-irc"
