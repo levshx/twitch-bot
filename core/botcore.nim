@@ -25,10 +25,10 @@ type
         words: seq[string],
         callback: proc (nick: string),
       ]],
-      twitch_sub: seq[tuple [    
+      sub: seq[tuple [    
         callback: proc (nick: string),
       ]],
-      twitch_resub: seq[tuple [
+      resub: seq[tuple [
         callback: proc (nick: string, month: int),
       ]],
       new_chatter: seq[tuple [
@@ -99,8 +99,7 @@ proc step*(self: var TwitchBot): void =
           self.logLine("try reconnect")
         self.logLine("isConnected: " & $self.isConnected())
       of EvMsg:
-        if self.log:
-          self.logLine(event.raw)
+        self.logLine(event.raw)
         let msg = event.params[event.params.high]
         let msg_words = multiReplace(msg, @[(".", ""),(",", ""),("!", ""),("?", ""),(":", ""),("_", "")]) 
         let user = event.nick 
@@ -119,10 +118,10 @@ proc step*(self: var TwitchBot): void =
         if event.cmd == MUserNotice:
           case (event.tags["msg-id"]):
           of "sub":
-            for subt in self.triggers.twitch_sub:
+            for subt in self.triggers.sub:
               subt.callback(user)
           of "resub":
-            for subt in self.triggers.twitch_resub:
+            for subt in self.triggers.resub:
               subt.callback(user, parseInt(event.tags["msg-param-cumulative-months"]))
           of "raid":
             echo "Пока не сделал рейд"

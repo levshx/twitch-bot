@@ -14,6 +14,12 @@ type
     Trigger_Resub* = tuple [
         callback: proc (nick: string, month: int),
     ]
+    Trigger_Raid* = tuple [
+        callback: proc (nick: string, month: int),
+    ]
+    Trigger_Unraid* = tuple [
+        callback: proc (nick: string, month: int),
+    ]
     Trigger_New_Chatter* = tuple [
         callback: proc (nick: string),
     ]
