@@ -8,11 +8,11 @@ on:
   push:
     branches: [ devel ]
     paths:
-      - '**.ast'
+      - '**.rst'
   pull_request:
     branches: [ devel ]
     paths:
-      - '**.ast'
+      - '**.rst'
 
 
   # Allows you to run this workflow manually from the Actions tab
